@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Intelligence Aggregator | SOC Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo-container">
+            <span class="shield-icon">🛡️</span>
+            <h2>THREAT<span>INTEL</span> AGGREGATOR</h2>
+        </div>
+        <div class="status-indicator">
+            <span class="pulse-dot"></span> SYSTEM ACTIVE
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-grid">
+
+        <!-- Sidebar / Recent Searches -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Recent IoC Searches</h3>
+                <button id="clearHistoryBtn" class="btn-text">Clear</button>
+            </div>
+            <ul id="historyList" class="history-list">
+                <li class="empty-history">No recent searches recorded.</li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Scan Input Form Card -->
+            <section class="card input-card">
+                <div class="card-header">
+                    <h3>Analyze Indicator of Compromise (IoC)</h3>
+                </div>
+                <form id="scanForm">
+                    <div class="form-group-main">
+                        <input type="text" id="targetInput" placeholder="Enter IP address, Domain, URL, or File Hash (MD5/SHA256)" required autocomplete="off">
+                        <select id="typeSelect">
+                            <option value="auto">Auto-Detect</option>
+                            <option value="ip">IPv4 Address</option>
+                            <option value="domain">Domain Name</option>
+                            <option value="hash">File Hash</option>
+                            <option value="url">URL</option>
+                        </select>
+                        <button type="submit" id="analyzeBtn" class="btn-primary">
+                            <span id="btnText">Analyze Threat</span>
+                            <span id="btnSpinner" class="spinner hidden"></span>
+                        </button>
+                    </div>
+
+                    <!-- API Keys Expandable Settings -->
+                    <details class="api-keys-dropdown">
+                        <summary>API Credentials / Custom Keys</summary>
+                        <div class="api-inputs">
+                            <div class="input-field">
+                                <label for="vtKeyInput">VirusTotal API Key:</label>
+                                <input type="password" id="vtKeyInput" placeholder="Uses server default if left empty">
+                            </div>
+                            <div class="input-field">
+                                <label for="otxKeyInput">AlienVault OTX API Key:</label>
+                                <input type="password" id="otxKeyInput" placeholder="Uses server default if left empty">
+                            </div>
+                        </div>
+                    </details>
+                </form>
+            </section>
+
+            <!-- Error Banner -->
+            <div id="errorBox" class="alert-box alert-error hidden"></div>
+
+            <!-- Results Dashboard Section -->
+            <div id="resultsContainer" class="hidden">
+                
+                <!-- Metrics Summary Cards Grid -->
+                <section class="metrics-grid">
+                    <div class="card metric-card">
+                        <span class="metric-label">Threat Status</span>
+                        <div id="threatBadge" class="badge">CLEAN</div>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="metric-label">VT Detections</span>
+                        <div id="metricDetections" class="metric-value">0 / 0</div>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="metric-label">OTX Threat Pulses</span>
+                        <div id="metricPulses" class="metric-value">0</div>
+                    </div>
+                    <div class="card metric-card">
+                        <span class="metric-label">Risk Score</span>
+                        <div id="metricScore" class="metric-value">0 / 100</div>
+                    </div>
+                </section>
+
+                <!-- Technical Details & Context Grid -->
+                <section class="details-grid">
+                    
+                    <!-- VirusTotal Overview -->
+                    <div class="card">
+                        <h3>VirusTotal Findings</h3>
+                        <div id="vtSummaryContent" class="vt-content">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- AlienVault OTX Overview -->
+                    <div class="card">
+                        <h3>AlienVault OTX Findings</h3>
+                        <div id="otxSummaryContent" class="otx-content">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- Vendor Detections Breakdown Table -->
+                <section class="card table-card">
+                    <div class="card-header flex-between">
+                        <h3>Engine Detection Breakdown</h3>
+                        <input type="text" id="tableSearchInput" placeholder="Filter engines..." class="table-search">
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="engineTable">
+                            <thead>
+                                <tr>
+                                    <th>Security Vendor</th>
+                                    <th>Category</th>
+                                    <th>Engine Result</th>
+                                    <th>Method</th>
+                                </tr>
+                            </thead>
+                            <tbody id="engineTableBody">
+                                <!-- Engine rows populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div> <!-- /resultsContainer -->
+
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
